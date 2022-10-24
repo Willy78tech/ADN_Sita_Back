@@ -1,12 +1,12 @@
 "use strict";
 
-const Post = require('../models/post');
+const Post = require("../models/boycott");
 
-exports.getPosts = (req, res, next) => {
+exports.getBoycotts = (req, res, next) => {
   Post.find()
     .then(posts => {
       if (!posts) {
-        const error = new Error('Aucun post trouvé');
+        const error = new Error("Aucun post trouvé");
         error.statusCode = 404;
         throw error;
       }
@@ -23,18 +23,20 @@ exports.getPosts = (req, res, next) => {
     });
 }
 
-exports.createPost = (req, res, next) => {
-  const title = req.body.title;
-  const content = req.body.content;
+exports.createBoycott = (req, res, next) => {
+  const target = req.body.target;
+  const description = req.body.description;
+  const summarize = req.body.summarize;
   const post = new Post({
-    title: title,
-    content: content,
-    userId: req.user.userId
+    target: target,
+    description: description,
+    summarize: summarize,
+    // userId: req.user.userId
   });
   post.save()
     .then(result => {
       res.status(201).json({
-        message: 'Post créé avec succès !',
+        message: "Post créé avec succès !",
         post: result
       });
     })

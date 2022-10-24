@@ -1,29 +1,29 @@
 "use strict";
 
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 dotenv.config();
 
-const User = require('../models/user');
+const User = require("../models/user");
 
 exports.signup = (req, res, next) => {
+  const pseudo = req.body.pseudo;
   const email = req.body.email;
   const password = req.body.password;
-  const name = req.body.name;
   bcrypt
     .hash(password, 12)
     .then(hashedPw => {
       const user = new User({
         email: email,
         password: hashedPw,
-        name: name
+        pseudo: pseudo
       });
       return user.save();
     })
     .then(result => {
       res.status(201).json({ 
-        message: 'Utilisateur créé !', 
+        message: "Utilisateur créé !", 
         userId: result._id 
       });
     })
@@ -42,7 +42,7 @@ exports.login = (req, res, next) => {
   User.findOne({ email: email })
     .then(user => {
       if (!user) {
-        const error = new Error('Utilisateur non trouvé');
+        const error = new Error("Utilisateur non trouvé");
         error.statusCode = 401;
         throw error;
       }
@@ -51,7 +51,7 @@ exports.login = (req, res, next) => {
     })
     .then(isEqual => {
       if (!isEqual) {
-        const error = new Error('Mot de passe incorrect');
+        const error = new Error("Mot de passe incorrect");
         error.statusCode = 401;
         throw error;
       }
