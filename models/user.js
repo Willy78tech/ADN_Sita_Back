@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    name: {
+    userName: {
       type: String,
       required: true
     },
@@ -14,11 +14,13 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true
+    },
+    isAdmin: {
+      type: Boolean,
+      require: true,
     }
   },
   { timestamps: true }
 );
 
 module.exports = mongoose.model('User', userSchema);
-
-

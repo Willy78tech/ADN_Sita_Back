@@ -1,4 +1,3 @@
-
 "use strict";
 
 const express = require('express');
@@ -8,7 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // parse application/json
-app.use(express.json());  
+app.use(express.json());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,14 +20,15 @@ app.use((req, res, next) => {
 });
 
 //routes
-const postsRoutes = require('./routes/post');
-app.use(postsRoutes);
-const authRoutes = require('./routes/auth');
-app.use(authRoutes);
+// const postsRoutes = require('./routes/post');
+// app.use(postsRoutes);
+// const authRoutes = require('./routes/auth');
+// app.use(authRoutes);
+const routes = require('./routes/route');
+app.use(routes);
 
-
-const errorController = require('./controllers/errorController');
-app.use(errorController.get404);
+// const errorController = require('./controllers/errorController');
+// app.use(errorController.get404);
 
 // Gestion des erreurs
 // "Attrappe" les erreurs envoyé par "throw"

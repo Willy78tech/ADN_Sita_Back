@@ -5,11 +5,11 @@
     "express": "^4.18.2",
     "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.6.5"
+    "mongoose": "^6.7.0"
   },
   "name": "demoapilive",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
