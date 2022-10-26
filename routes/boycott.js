@@ -1,17 +1,19 @@
 "use strict";
-const express = require('express');
-// const isAuth = require('../middleware/is-auth');
-
-
+const express = require("express");
 const router = express.Router();
+const boycottController = require("../controllers/boycottController");
+const isAuth = require("../middleware/is-auth");
 
-const boycottController = require('../controllers/boycottController');
 
-// / => GET
-router.get('/get-boycotts', boycottController.getBoycotts);
+router.get("/get-boycotts", boycottController.getBoycotts);
+router.get("/get-boycott/:boycottId", boycottController.getBoycott);
+router.get("/get-boycott-target/:target",isAuth, boycottController.getBoycottTarget);
 
-// POST
-router.post('/add-boycott', boycottController.createBoycott);
+
+router.post("/add-boycott", isAuth, boycottController.createBoycott);
+router.post("/mod-boycott/:boycottId", isAuth, boycottController.modBoycott);
+
+router.delete("/delete-boycott/:boycottId", isAuth, boycottController.deleteBoycott);
 
 
 module.exports = router;

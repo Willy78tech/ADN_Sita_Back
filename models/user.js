@@ -14,6 +14,18 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true
+    },
+    myFollowedUsers: {
+      type: Array,
+      require: false
+    },
+    myFollowedBoycotts: {
+      type: Array,
+      require: false
+    },
+    myFollowers: {
+      type: Array,
+      require: false
     }
   },
   { timestamps: true }

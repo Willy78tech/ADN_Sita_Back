@@ -1,25 +1,32 @@
 "use strict";
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const boycottSchema = new Schema({
-  target: {
-    type: String,
-    required: true
+const boycottSchema = new Schema(
+  {
+    target: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    summary: {
+      type: String,
+      required: true,
+    },
+    follower: {
+      type: Array,
+      require: false
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: false
+    }
   },
-  description: {
-    type: String,
-    required: true
-  },
-  summarize: {
-    type: String,
-    required: true
-  },
-  // userId: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: false
-  // }
-});
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Boycott', boycottSchema);
+module.exports = mongoose.model("Boycott", boycottSchema);

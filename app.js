@@ -26,6 +26,8 @@ const authRoutes = require("./routes/auth");
 app.use(authRoutes);
 const userRoutes = require("./routes/user");
 app.use(userRoutes);
+const followerRoutes = require("./routes/follower");
+app.use(followerRoutes);
 
 
 const errorController = require("./controllers/errorController");
