@@ -10,12 +10,12 @@ router.post('/postLogin', homeController.postLogin);
 router.post('/postLogout', homeController.postLogout);
 //router.get('/getUserById/:id', homeController.getUserById);
 router.get('/getUserByName', homeController.getUserByName);
-// router.get('/getAllUser', homeController.getAllUser);
+//router.get('/getAllUser', homeController.getAllUser);
 router.put('/putUserById/:id', homeController.putUserById);
 router.delete('/deleteUserById/:id', homeController.deleteUserById);
 
 // Boycott 7 routes
-router.post('/postNewBoycott', homeController.postNewBoycott);
+router.post('/postNewBoycott/:id', homeController.postNewBoycott);
 router.post('/postBoycottParticipation', homeController.postBoycottParticipation);
 //router.get('/getBoycottById', homeController.getBoycottById);
 router.get('/getBoycottByName', homeController.getBoycottByName);

@@ -38,10 +38,6 @@ app.use(function (err, req, res, next) {
   res.status(err.statusCode).json({ message: err.message, statusCode: err.statusCode });
 });
 
-
-
-
-
 const PORT = process.env.PORT || 3000;
 mongoose
   .connect(process.env.MONGODB)
@@ -51,4 +47,3 @@ mongoose
     });
   })
   .catch(err => console.log(err));
-

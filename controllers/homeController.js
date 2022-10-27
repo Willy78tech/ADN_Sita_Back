@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const User = require('../models/user');
-const Boycutt = require('../models/boycott');
+const Boycott = require('../models/boycott');
 
 // ****************************************************
 //                  User functions
@@ -86,7 +86,7 @@ exports.postLogin = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
     res.app.locals.decodedToken = null;
-    res.status(200).json({message: "Deconnection successful."});
+    res.status(200).json({ message: "Deconnection successful." });
     res.redirect("/");
 }
 
@@ -176,6 +176,30 @@ exports.deleteUserById = (req, res, next) => {
 // ****************************************************
 
 exports.postNewBoycott = (req, res, next) => {
+    //tested
+    const title = req.body.title;
+    const summary = req.body.summary;
+    const description = req.body.description;
+    const userId = req.params.id;
+
+    const boycott = new Boycott({
+        title: title,
+        summary: summary,
+        description: description,
+        userId: userId
+    });
+
+    boycott.save()
+        .then(result => {
+            res.status(201).json({
+                message: 'User have been created !'
+            });
+        })
+        .catch(err => {
+            if (!err.statusCode)
+                err.statusCode = 500;
+            next(err);
+        });
 
 }
 

@@ -17,7 +17,23 @@ const userSchema = new Schema(
     },
     isAdmin: {
       type: Boolean,
-      require: true,
+      require: true
+    },
+    boycottCreated: {
+      type: Array,
+      require: false
+    },
+    boycotting: {
+      type: Array,
+      require: false
+    },
+    follower: {
+      type: Array,
+      require: false
+    },
+    followed: {
+      type: Array,
+      require: false
     }
   },
   { timestamps: true }
