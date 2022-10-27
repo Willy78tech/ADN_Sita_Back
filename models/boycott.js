@@ -16,6 +16,10 @@ const boycottSchema = new Schema(
       type: String,
       require: true
     },
+    image: {
+      type: String,
+      require: false
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',

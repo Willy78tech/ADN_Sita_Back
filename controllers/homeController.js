@@ -180,12 +180,14 @@ exports.postNewBoycott = (req, res, next) => {
     const title = req.body.title;
     const summary = req.body.summary;
     const description = req.body.description;
+    const image = req.body.image;
     const userId = req.params.id;
 
     const boycott = new Boycott({
         title: title,
         summary: summary,
         description: description,
+        image: image,
         userId: userId
     });
 
@@ -200,7 +202,6 @@ exports.postNewBoycott = (req, res, next) => {
                 err.statusCode = 500;
             next(err);
         });
-
 }
 
 exports.postBoycottParticipation = (req, res, next) => {
@@ -208,27 +209,84 @@ exports.postBoycottParticipation = (req, res, next) => {
 }
 
 exports.getBoycottByName = (req, res, next) => {
+    //tested
+    const boycott = req.body.searchInput;
 
+    Boycott.find({ title: boycott })
+        .then(boycott => {
+            res.status(200).send(boycott)
+        })
+        .catch(err => {
+            if (!err.statusCode)
+                err.statusCode = 500;
+            next(err);
+        });
 }
 
 exports.getAllBoycott = (req, res, next) => {
-
+    //tested
+    Boycott.find({})
+        .then(boycott => {
+            res.status(200).send(boycott)
+        })
+        .catch(err => {
+            if (!err.statusCode)
+                err.statusCode = 500;
+            next(err);
+        });
 }
 
 exports.putBoycottById = (req, res, next) => {
+    //tested
+    const id = req.params.id;
+    const title = req.body.title;
+    const summary = req.body.summary;
+    const description = req.body.description;
+    const image = req.body.image;
 
+    Boycott.findByIdAndUpdate({ _id: id })
+        .exec()
+        .then(boycott => {
+            boycott.title = title;
+            boycott.summary = summary;
+            boycott.description = description;
+            boycott.image = image;
+            boycott.save();
+            res.status(200).json({
+                message: "Change successful"
+            })
+        })
+        .catch(err => {
+            if (!err.statusCode)
+                err.statusCode = 500;
+            next(err);
+        });
 }
 
 exports.deleteBoycottById = (req, res, next) => {
+    //tested
+    const id = req.params.id;
 
+    Boycott.remove({ _id: id })
+        .exec()
+        .then(result => {
+            res.status(201).json("Boycott deleted successfully.");
+        })
+        .catch(err => {
+            if (!err.statusCode)
+                err.statusCode = 500;
+            next(err);
+        });
 }
 
 exports.deleteBoycottParticipation = (req, res, next) => {
 
 }
 
+// ****************************************************
+//                 Follow functions 
+// ****************************************************
 
-// Follow functions
 exports.postFollow = (req, res, next) => {
 
 }
@@ -241,8 +299,10 @@ exports.deleteFollow = (req, res, next) => {
 
 }
 
+// ****************************************************
+//                 Followed functions 
+// ****************************************************
 
-// Followed functions
 exports.postFollowed = (req, res, next) => {
 
 }

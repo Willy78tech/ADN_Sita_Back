@@ -3,6 +3,7 @@
 const express = require('express');
 const homeController = require('../controllers/homeController');
 const router = express.Router();
+const isAuth = require('../middleware/is-auth');
 
 // User 6 routes
 router.post('/postNewUser', homeController.postNewUser);
@@ -20,8 +21,8 @@ router.post('/postBoycottParticipation', homeController.postBoycottParticipation
 //router.get('/getBoycottById', homeController.getBoycottById);
 router.get('/getBoycottByName', homeController.getBoycottByName);
 router.get('/getAllBoycott', homeController.getAllBoycott);
-router.put('/putBoycottById', homeController.putBoycottById);
-router.delete('/deleteBoycottById', homeController.deleteBoycottById);
+router.put('/putBoycottById/:id', homeController.putBoycottById);
+router.delete('/deleteBoycottById/:id', homeController.deleteBoycottById);
 router.delete('/deleteBoycottParticipation', homeController.deleteBoycottParticipation);
 
 // Follow 3 routes
