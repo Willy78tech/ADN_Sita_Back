@@ -1,4 +1,3 @@
-
 "use strict";
 
 const express = require('express');
@@ -21,13 +20,17 @@ app.use((req, res, next) => {
 });
 
 //routes
-const postsRoutes = require('./routes/post');
-app.use(postsRoutes);
-const authRoutes = require('./routes/auth');
+const boyCottRoutes = require("./routes/boycott");
+app.use(boyCottRoutes);
+const authRoutes = require("./routes/auth");
 app.use(authRoutes);
+const userRoutes = require("./routes/user");
+app.use(userRoutes);
+const followerRoutes = require("./routes/follower");
+app.use(followerRoutes);
 
 
-const errorController = require('./controllers/errorController');
+const errorController = require("./controllers/errorController");
 app.use(errorController.get404);
 
 // Gestion des erreurs

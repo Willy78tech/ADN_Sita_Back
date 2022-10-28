@@ -4,14 +4,14 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
 
-/** Vérifie si la requête a un token JWT valide */
+//Vérifie si la requête a un token JWT valide
 
 module.exports = (req, res, next) => {
-  const authHeader = req.get('Authorization');
+  const authHeader = req.get("Authorization");
   if (!authHeader) {
-    res.status(401).send({ error: 'Non authentifié..' });
+    res.status(401).json({ error: 'No authentification...' });
   }
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(" ")[1];
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET);

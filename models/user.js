@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
-    name: {
+    pseudo: {
       type: String,
       required: true
     },
@@ -11,8 +11,29 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
+    quote: {
+      type: String,
+      required: true,
+      maxlength: 255 
+    },
     password: {
       type: String,
+      required: true
+    },
+    following: {
+      type: Array,
+      required: false
+    },
+    followers: {
+      type: Array,
+      required: false
+    },
+    boycotting: {
+      type: Array,
+      required: false
+    },
+    isAdmin: {
+      type: Boolean,
       required: true
     }
   },
