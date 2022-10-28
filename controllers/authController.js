@@ -11,36 +11,50 @@ exports.signup = (req, res, next) => {
   const pseudo = req.body.pseudo;
   const email = req.body.email;
   const password = req.body.password;
+  User.find({ email: email }).then((result) => {
+    console.log(result.length)
+    console.log(result)
+    if (result.length >= 1) {
+      const error = new Error("Email already taken...");
+      error.statusCode = 404;
+      throw error;
+    }
+  }).catch((err) => {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  });
   bcrypt
     .hash(password, 12)
-    .then(hashedPw => {
+    .then((hashedPw) => {
       const user = new User({
         email: email,
         password: hashedPw,
-        pseudo: pseudo
+        pseudo: pseudo,
       });
       return user.save();
     })
-    .then(result => {
-      res.status(201).json({ 
-        message: "Utilisateur créé !", 
-        userId: result._id 
+    .then((result) => {
+      res.status(201).json({
+        message: "Utilisateur créé !",
+        userId: result._id,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
       next(err);
     });
-}
+};
 
 exports.login = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   let loadedUser;
   User.findOne({ email: email })
-    .then(user => {
+    .then((user) => {
       if (!user) {
         const error = new Error("Utilisateur non trouvé");
         error.statusCode = 401;
@@ -49,7 +63,7 @@ exports.login = (req, res, next) => {
       loadedUser = user;
       return bcrypt.compare(password, user.password);
     })
-    .then(isEqual => {
+    .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("Mot de passe incorrect");
         error.statusCode = 401;
@@ -58,17 +72,17 @@ exports.login = (req, res, next) => {
       const token = jwt.sign(
         {
           email: loadedUser.email,
-          userId: loadedUser._id.toString()
+          userId: loadedUser._id.toString(),
         },
         process.env.JWT_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: "1h" }
       );
       res.status(200).json({ token: token, userId: loadedUser._id.toString() });
     })
-    // .catch(err => {
-    //   if (!err.statusCode) {
-    //     err.statusCode = 500;
-    //   }
-    //   next(err);
-    // });
-}
+  .catch(err => {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  });
+};

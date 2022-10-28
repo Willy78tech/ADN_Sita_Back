@@ -78,12 +78,14 @@ exports.getPseudo = (req, res, next) => {
   const pseudo = req.params.pseudo;
   User.find({pseudo:pseudo})
     .then((user) => {
-      if (!user) {
-        const error = new Error("There is no %s", pseudo);
+      if (user.length == 0) {
+        const error = new Error("There is no " + pseudo);
         error.statusCode = 404;
         throw error;
       }
+      else {
       res.status(200).json({ user: user });
+      }
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -92,3 +94,25 @@ exports.getPseudo = (req, res, next) => {
       next(err);
     });
 };
+
+exports.deletePseudo = (req,res,next) => {
+  const pseudo = req.params.pseudo;
+  User.findOne({pseudo:pseudo})
+    .then((user) => {
+      if (!user) {
+        const error = new Error("No user found");
+        error.statusCode = 404;
+        throw error;
+      }
+      return user.deleteOne();
+    })
+    .then((user) => {
+      res.status(200).json({ message: "User deleted", user: user });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+}

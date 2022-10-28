@@ -26,7 +26,7 @@ exports.getBoycotts = (req, res, next) => {
 
 exports.getBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
-  Boycott.findOne({boycottId:boycottId})
+  Boycott.findById(boycottId)
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("No boycott found...");

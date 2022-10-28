@@ -16,7 +16,7 @@ const boycottSchema = new Schema(
       type: String,
       required: true,
     },
-    follower: {
+    followers: {
       type: Array,
       require: false
     },
