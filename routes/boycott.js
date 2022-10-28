@@ -7,7 +7,7 @@ const isAuth = require("../middleware/is-auth");
 
 router.get("/get-boycotts", boycottController.getBoycotts);
 router.get("/get-boycott/:boycottId", boycottController.getBoycott);
-router.get("/get-boycott-target/:target",isAuth, boycottController.getBoycottTarget);
+router.get("/get-boycott-title/:title",isAuth, boycottController.getBoycottTitle);
 
 
 router.post("/add-boycott", isAuth, boycottController.createBoycott);

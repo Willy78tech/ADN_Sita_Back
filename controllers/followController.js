@@ -14,13 +14,13 @@ exports.followUser = (req, res, next) => {
       //Si le l'utilisateur est trouvé on sauvegarde l'id du follower dans le user follow.
     } 
     else {
-      user.myFollowers.push(myId);
+      user.followers.push(myId);
       user.save();
     }
   });
   User.findById(myId)
     .then((user) => {
-      const myFollow = user.myFollowedUsers;
+      const myFollow = user.following;
 
       //Vérifie si l'utilisateur est dans le tableau.
       if (myFollow.indexOf(userId) > -1) {
@@ -66,7 +66,7 @@ exports.followBoycott = (req, res, next) => {
   });
   User.findById(myId)
     .then((user) => {
-      const myFollow = user.myFollowedBoycotts;
+      const myFollow = user.boycotting;
       if (myFollow.indexOf(boycottId) > -1) {
         res.status(201).json({
           message: "Boycott already followed",
@@ -90,18 +90,18 @@ exports.followBoycott = (req, res, next) => {
     });
 };
 
-exports.getMyFollowers = (req, res, next) => {
+exports.getFollowers = (req, res, next) => {
   const myId = req.user.userId;
   User.findById(myId)
     .then((user) => {
-      if (user.myFollowers.length == 0) {
+      if (user.followers.length == 0) {
         const error = new Error("Loser! You don't have any followers");
         error.statusCode = 404;
         throw error;
       }
       });
-      //Si le id du user1 et dans le tableau myFollowers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
-        User.find({myFollowedUsers: myId}) 
+      //Si le id du user1 et dans le tableau followers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
+        User.find({following: myId}) 
         .then ((follow) => {
           console.log("FOLLOW:", follow) 
           res.status(200).json({
@@ -117,11 +117,11 @@ exports.getMyFollowers = (req, res, next) => {
     });
 };
 
-exports.getMyFollowedBoycotts = (req, res, next) => {
+exports.getBoycotting = (req, res, next) => {
   const myId = req.user.userId;
   User.findById(myId)
     .then((user) => {
-      if (user.myFollowedBoycotts.length == 0) {
+      if (user.boycotting.length == 0) {
         const error = new Error("You don't follow any boycott...");
         error.statusCode = 404;
         throw error;
@@ -141,39 +141,18 @@ exports.getMyFollowedBoycotts = (req, res, next) => {
     });
 };
 
-// exports.getMyFollowedUsers = (req, res, next) => {
-//   const myId = req.user.userId;
-//   User.findById(myId)
-//     .then((user) => {
-//       if (user.myFollowers == 0) {
-//         const error = new Error("You don't follow anyone...");
-//         error.statusCode = 404;
-//         throw error;
-//       }
-//       res.status(200).json({
-//         user: user.myFollowers,
-//       });
-//     })
-//     .catch((err) => {
-//       if (!err.statusCode) {
-//         err.status = 500;
-//       }
-//       next(err);
-//     });
-// };
-
-exports.getMyFollowedUsers = (req, res, next) => {
+exports.getFollowing = (req, res, next) => {
   const myId = req.user.userId;
   User.findById(myId)
     .then((user) => {
-      if (user.myFollowedUsers.length == 0) {
+      if (user.following.length == 0) {
         const error = new Error("You don't follow anyone...");
         error.statusCode = 404;
         throw error;
       }
       });
-      //Si le id du user1 et dans le tableau myFollowers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
-        User.find({myFollowers: myId}) 
+      //Si le id du user1 et dans le tableau followers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
+        User.find({followers: myId}) 
         .then ((follow) => {
           console.log("FOLLOW:", follow) 
           res.status(200).json({

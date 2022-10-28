@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const boycottSchema = new Schema(
   {
-    target: {
+    title: {
       type: String,
       required: true,
     },
@@ -15,6 +15,7 @@ const boycottSchema = new Schema(
     summary: {
       type: String,
       required: true,
+      maxlength: 255 
     },
     followers: {
       type: Array,

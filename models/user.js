@@ -11,21 +11,30 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
+    quote: {
+      type: String,
+      required: true,
+      maxlength: 255 
+    },
     password: {
       type: String,
       required: true
     },
-    myFollowedUsers: {
+    following: {
       type: Array,
-      require: false
+      required: false
     },
-    myFollowedBoycotts: {
+    followers: {
       type: Array,
-      require: false
+      required: false
     },
-    myFollowers: {
+    boycotting: {
       type: Array,
-      require: false
+      required: false
+    },
+    isAdmin: {
+      type: Boolean,
+      required: true
     }
   },
   { timestamps: true }

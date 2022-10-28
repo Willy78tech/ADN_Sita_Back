@@ -9,7 +9,7 @@ dotenv.config();
 module.exports = (req, res, next) => {
   const authHeader = req.get("Authorization");
   if (!authHeader) {
-    res.status(401).send({ error: 'No authentification...' });
+    res.status(401).json({ error: 'No authentification...' });
   }
   const token = authHeader.split(" ")[1];
   let decodedToken;

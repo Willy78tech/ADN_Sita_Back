@@ -11,40 +11,55 @@ exports.signup = (req, res, next) => {
   const pseudo = req.body.pseudo;
   const email = req.body.email;
   const password = req.body.password;
-  User.find({ email: email }).then((result) => {
-    console.log(result.length)
-    console.log(result)
-    if (result.length >= 1) {
-      const error = new Error("Email already taken...");
-      error.statusCode = 404;
-      throw error;
-    }
-  }).catch((err) => {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  });
-  bcrypt
-    .hash(password, 12)
-    .then((hashedPw) => {
-      const user = new User({
-        email: email,
-        password: hashedPw,
-        pseudo: pseudo,
-      });
-      return user.save();
-    })
-    .then((result) => {
-      res.status(201).json({
-        message: "Utilisateur créé !",
-        userId: result._id,
-      });
+  const confirmPassword = req.body.confirmPassword;
+  const quote = req.body.quote;
+  const isAdmin = false;
+
+  User.findOne({ email: email })
+    .then((emailFound) => {
+      if (emailFound == null) {
+        User.findOne({ pseudo: pseudo })
+          .then((userNameFound) => {
+            if (userNameFound == null) {
+              bcrypt.hash(password, 12)
+                .then((hashedPw) => {
+                  if (password == confirmPassword) {
+                    const user = new User({
+                      pseudo: pseudo,
+                      email: email,
+                      password: hashedPw,
+                      quote: quote,
+                      isAdmin: isAdmin,
+                    });
+                    console.log("USER",user)
+                    return user.save();
+                  }
+                })
+                .then((result) => {
+                  console.log(result)
+                  res.status(201).json({
+                    message: "User have been created !",
+                    userId: result._id,
+                  });
+                })
+                .catch((err) => {
+                  if (!err.statusCode) err.statusCode = 500;
+                  next(err);
+                });
+            } else {
+              res.status(404).json("This pseudo is already used.");
+            }
+          })
+          .catch((err) => {
+            if (!err.statusCode) err.statusCode = 500;
+            next(err);
+          });
+      } else {
+        res.status(404).json("This email is already used.");
+      }
     })
     .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
+      if (!err.statusCode) err.statusCode = 500;
       next(err);
     });
 };
@@ -79,10 +94,10 @@ exports.login = (req, res, next) => {
       );
       res.status(200).json({ token: token, userId: loadedUser._id.toString() });
     })
-  .catch(err => {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  });
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };

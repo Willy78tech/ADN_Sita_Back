@@ -27,6 +27,7 @@ exports.modUser = (req, res, next) => {
   const userId = req.params.userId;
   const pseudo = req.body.pseudo;
   const email = req.body.email;
+  const quote = req.body.quote;
   const password = req.body.password;
 
   User.findById(userId)
@@ -38,6 +39,7 @@ exports.modUser = (req, res, next) => {
       }
       user.pseudo = pseudo;
       user.email = email;
+      user.quote = quote;
       user.password = password;
       return user.save();
     })

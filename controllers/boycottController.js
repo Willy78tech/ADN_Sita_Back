@@ -47,11 +47,11 @@ exports.getBoycott = (req, res, next) => {
 };
 
 exports.createBoycott = (req, res, next) => {
-  const target = req.body.target;
+  const title = req.body.title;
   const description = req.body.description;
   const summary = req.body.summary;
   const boycott = new Boycott({
-    target: target,
+    title: title,
     description: description,
     summary: summary,
     userId: req.user.userId
@@ -74,7 +74,7 @@ exports.createBoycott = (req, res, next) => {
 
 exports.modBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
-  const target = req.body.target;
+  const title = req.body.title;
   const description = req.body.description;
   const summary = req.body.summary;
   Boycott.findById(boycottId)
@@ -84,7 +84,7 @@ exports.modBoycott = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      boycott.target = target;
+      boycott.title = title;
       boycott.description = description;
       boycott.summary = summary;
       return boycott.save();
@@ -123,12 +123,12 @@ exports.deleteBoycott = (req,res,next) => {
 }
 
 
-exports.getBoycottTarget = (req, res, next) => {
-  const target = req.params.target;
-  Boycott.findOne({target:target})
+exports.getBoycottTitle = (req, res, next) => {
+  const title = req.params.title;
+  Boycott.findOne({title:title})
     .then((boycott) => {
       if (!boycott) {
-        const error = new Error("There is no %s boycott", target);
+        const error = new Error("There is no %s boycott", title);
         error.statusCode = 404;
         throw error;
       }
