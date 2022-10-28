@@ -56,6 +56,7 @@ exports.modUser = (req, res, next) => {
 
 exports.deleteUser = (req, res, next) => {
   const userId = req.params.userId;
+
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -78,6 +79,7 @@ exports.deleteUser = (req, res, next) => {
 
 exports.getPseudo = (req, res, next) => {
   const pseudo = req.params.pseudo;
+
   User.find({pseudo:pseudo})
     .then((user) => {
       if (user.length == 0) {
@@ -99,6 +101,7 @@ exports.getPseudo = (req, res, next) => {
 
 exports.deletePseudo = (req,res,next) => {
   const pseudo = req.params.pseudo;
+  
   User.findOne({pseudo:pseudo})
     .then((user) => {
       if (!user) {

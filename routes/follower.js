@@ -11,5 +11,4 @@ router.get("/get-followers", isAuth, followerController.getFollowers)
 router.post("/follow-user/:userId", isAuth, followerController.followUser);
 router.post("/follow-boycott/:boycottId", isAuth, followerController.followBoycott);
 
-
 module.exports = router;
