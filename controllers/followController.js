@@ -6,6 +6,7 @@ const boycott = require("../models/boycott");
 exports.followUser = (req, res, next) => {
   const userId = req.params.userId;
   const myId = req.user.userId;
+
   User.findById(userId).then((user) => {
     if (!user) {
       const error = new Error("No user found...");
@@ -18,6 +19,7 @@ exports.followUser = (req, res, next) => {
       user.save();
     }
   });
+
   User.findById(myId)
     .then((user) => {
       const myFollow = user.following;
@@ -54,6 +56,7 @@ exports.followUser = (req, res, next) => {
 exports.followBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
   const myId = req.user.userId;
+
   Boycott.findById(boycottId).then((boycott) => {
     if (!boycott) {
       const error = new Error("No boycott found...");
@@ -64,6 +67,7 @@ exports.followBoycott = (req, res, next) => {
       boycott.save();
     }
   });
+
   User.findById(myId)
     .then((user) => {
       const myFollow = user.boycotting;
@@ -92,6 +96,7 @@ exports.followBoycott = (req, res, next) => {
 
 exports.getFollowers = (req, res, next) => {
   const myId = req.user.userId;
+
   User.findById(myId)
     .then((user) => {
       if (user.followers.length == 0) {
@@ -119,6 +124,7 @@ exports.getFollowers = (req, res, next) => {
 
 exports.getBoycotting = (req, res, next) => {
   const myId = req.user.userId;
+
   User.findById(myId)
     .then((user) => {
       if (user.boycotting.length == 0) {
@@ -143,6 +149,7 @@ exports.getBoycotting = (req, res, next) => {
 
 exports.getFollowing = (req, res, next) => {
   const myId = req.user.userId;
+  
   User.findById(myId)
     .then((user) => {
       if (user.following.length == 0) {

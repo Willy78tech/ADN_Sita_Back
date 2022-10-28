@@ -31,12 +31,10 @@ exports.signup = (req, res, next) => {
                       quote: quote,
                       isAdmin: isAdmin,
                     });
-                    console.log("USER",user)
                     return user.save();
                   }
                 })
                 .then((result) => {
-                  console.log(result)
                   res.status(201).json({
                     message: "User have been created !",
                     userId: result._id,
