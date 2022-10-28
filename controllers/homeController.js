@@ -7,6 +7,7 @@ dotenv.config();
 
 const User = require('../models/user');
 const Boycott = require('../models/boycott');
+const user = require('../models/user');
 
 // ****************************************************
 //                  User functions
@@ -20,29 +21,55 @@ exports.postNewUser = (req, res, next) => {
     const confirmPassword = req.body.confirmPassword;
     const isAdmin = false;
 
-    bcrypt.hash(password, 12)
-        .then(hashedPw => {
-            if (password == confirmPassword) {
-                const user = new User({
-                    userName: userName,
-                    email: email,
-                    password: hashedPw,
-                    isAdmin: isAdmin,
-                });
-                return user.save();
+    user.findOne({ email: email })
+        .then(emailFound => {
+            if (emailFound == null) {
+                User.findOne({ userName: userName })
+                    .then(userNameFound => {
+                        if (userNameFound == null) {
+                            bcrypt.hash(password, 12)
+                                .then(hashedPw => {
+                                    if (password == confirmPassword) {
+                                        const user = new User({
+                                            userName: userName,
+                                            email: email,
+                                            password: hashedPw,
+                                            isAdmin: isAdmin,
+                                        });
+                                        return user.save();
+                                    }
+                                })
+                                .then(result => {
+                                    res.status(201).json({
+                                        message: 'User have been created !',
+                                        userId: result._id
+                                    });
+                                })
+                                .catch(err => {
+                                    if (!err.statusCode)
+                                        err.statusCode = 500;
+                                    next(err);
+                                });
+                        } else {
+                            res.status(404).send("This userName is already used.")
+                        }
+                    })
+                    .catch(err => {
+                        if (!err.statusCode)
+                            err.statusCode = 500;
+                        next(err);
+                    });
+            } else {
+                res.status(404).send("This email is already used.")
             }
-        })
-        .then(result => {
-            res.status(201).json({
-                message: 'User have been created !',
-                userId: result._id
-            });
         })
         .catch(err => {
             if (!err.statusCode)
                 err.statusCode = 500;
             next(err);
         });
+
+
 }
 
 exports.postLogin = (req, res, next) => {
