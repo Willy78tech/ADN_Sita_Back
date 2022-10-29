@@ -9,8 +9,10 @@ router.get("/get-boycott/:boycottId", boycottController.getBoycott);
 router.get("/get-boycott-title/:title",isAuth, boycottController.getBoycottTitle);
 
 router.post("/add-boycott", isAuth, boycottController.createBoycott);
-router.post("/mod-boycott/:boycottId", isAuth, boycottController.modBoycott);
+router.put("/mod-boycott/:boycottId", isAuth, boycottController.modBoycott);
 
 router.delete("/delete-boycott/:boycottId", isAuth, boycottController.deleteBoycott);
+
+router.get("/get-boycott-created/:userId", isAuth, boycottController.getMyBoycottsCreated);
 
 module.exports = router;
