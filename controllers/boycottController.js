@@ -26,6 +26,7 @@ exports.getBoycotts = (req, res, next) => {
 
 exports.getBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
+
   Boycott.findById(boycottId)
     .then((boycott) => {
       if (!boycott) {
@@ -56,6 +57,7 @@ exports.createBoycott = (req, res, next) => {
     summary: summary,
     userId: req.user.userId
   });
+
   boycott
     .save()
     .then((result) => {
@@ -77,6 +79,7 @@ exports.modBoycott = (req, res, next) => {
   const title = req.body.title;
   const description = req.body.description;
   const summary = req.body.summary;
+
   Boycott.findById(boycottId)
     .then((boycott) => {
       if (!boycott) {
@@ -102,6 +105,7 @@ exports.modBoycott = (req, res, next) => {
 
 exports.deleteBoycott = (req,res,next) => {
   const boycottId = req.params.boycottId;
+
   Boycott.findById(boycottId)
   .then((boycott) => {
     if(!boycott) {
@@ -120,11 +124,12 @@ exports.deleteBoycott = (req,res,next) => {
     }
     next(err);
   });
-}
+};
 
 
 exports.getBoycottTitle = (req, res, next) => {
   const title = req.params.title;
+  
   Boycott.findOne({title:title})
     .then((boycott) => {
       if (!boycott) {
@@ -135,6 +140,29 @@ exports.getBoycottTitle = (req, res, next) => {
       res.status(200).json({ boycott: boycott });
     })
     .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.getMyBoycottsCreated = (req, res, next) => {
+  const userId = req.params.userId;
+  Boycott.find({
+      userId: userId
+    })
+    .then(boycotts => {
+      if (!boycotts) {
+        const error = new Error('Aucun boycott trouvé');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        boycotts: boycotts
+      });
+    })
+    .catch(err => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }

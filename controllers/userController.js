@@ -23,6 +23,24 @@ exports.getUser = (req, res, next) => {
     });
 };
 
+exports.getUsers = (req, res, next) => {
+  User.find()
+    .then(users => {
+      if (!users) {
+        const error = new Error('Aucun utilisateur trouvé');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({ users: users });
+    })
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
 exports.modUser = (req, res, next) => {
   const userId = req.params.userId;
   const pseudo = req.body.pseudo;
@@ -56,6 +74,7 @@ exports.modUser = (req, res, next) => {
 
 exports.deleteUser = (req, res, next) => {
   const userId = req.params.userId;
+
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -116,4 +135,10 @@ exports.deletePseudo = (req, res, next) => {
       }
       next(err);
     });
+};
+
+exports.logout = (req, res) => {
+  res.app.locals.decodedToken = null;
+  res.status(200).json({ message: 'Déconnexion réussie' });
+  res.redirect("/");
 };
