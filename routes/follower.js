@@ -9,7 +9,9 @@ router.get("/get-followed-boycotts", isAuth, followerController.getBoycotting)
 router.get("/get-followers", isAuth, followerController.getFollowers)
 
 router.post("/follow-user/:userId", isAuth, followerController.followUser);
+router.post("/unfollow-user/:userId", isAuth, followerController.unfollowUser);
 router.post("/follow-boycott/:boycottId", isAuth, followerController.followBoycott);
+router.post("/unfollow-boycott/:boycottId", isAuth, followerController.unfollowBoycott);
 
 
 module.exports = router;
