@@ -133,7 +133,7 @@ exports.getBoycottTitle = (req, res, next) => {
   Boycott.findOne({title:title})
     .then((boycott) => {
       if (!boycott) {
-        const error = new Error("There is no %s boycott", title);
+        const error = new Error("There is no " + title + " boycott");
         error.statusCode = 404;
         throw error;
       }

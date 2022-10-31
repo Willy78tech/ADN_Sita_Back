@@ -3,6 +3,7 @@ const User = require("../models/user");
 const Boycott = require("../models/boycott");
 const boycott = require("../models/boycott");
 
+
 exports.followUser = (req, res, next) => {
   const userId = req.params.userId;
   const myId = req.user.userId;
@@ -13,8 +14,7 @@ exports.followUser = (req, res, next) => {
       error.statusCode = 404;
       throw error;
       //Si le l'utilisateur est trouvé on sauvegarde l'id du follower dans le user follow.
-    } 
-    else {
+    } else {
       user.followers.push(myId);
       user.save();
     }
@@ -23,7 +23,6 @@ exports.followUser = (req, res, next) => {
   User.findById(myId)
     .then((user) => {
       const myFollow = user.following;
-
       //Vérifie si l'utilisateur est dans le tableau.
       if (myFollow.indexOf(userId) > -1) {
         res.status(201).json({
@@ -63,7 +62,7 @@ exports.followBoycott = (req, res, next) => {
       error.statusCode = 404;
       throw error;
     } else {
-      boycott.followers.push(myId)
+      boycott.followers.push(myId);
       boycott.save();
     }
   });
@@ -83,7 +82,6 @@ exports.followBoycott = (req, res, next) => {
           message: "Boycott followed",
           post: user,
         });
-
       }
     })
     .catch((err) => {
@@ -98,53 +96,50 @@ exports.getFollowers = (req, res, next) => {
   const myId = req.user.userId;
 
   User.findById(myId)
-    .then((user) => {
-      if (user.followers.length == 0) {
-        const error = new Error("Loser! You don't have any followers");
-        error.statusCode = 404;
-        throw error;
-      }
-      });
-      //Si le id du user1 et dans le tableau followers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
-        User.find({following: myId}) 
-        .then ((follow) => {
-          console.log("FOLLOW:", follow) 
-          res.status(200).json({
-            followers: follow,
-          });
+  .then((user) => {
+    if (user.followers.length == 0) {
+      const error = new Error("Loser! You don't have any followers");
+      error.statusCode = 404;
+      throw error;
+    } else {
+      User.find({following: myId})
+      .then((follow) => {
+        res.status(200).json({
+          followers: follow,
         })
-    // })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+      })
+    }
+  })
+  .catch((err) => {
+    if(!err.statusCode){
+    err.statusCode = 500;
+    }
+    next(err);
+  });
 };
 
 exports.getBoycotting = (req, res, next) => {
   const myId = req.user.userId;
-
-  User.findById(myId)
-    .then((user) => {
-      if (user.boycotting.length == 0) {
-        const error = new Error("You don't follow any boycott...");
-        error.statusCode = 404;
-        throw error;
-      }
-      });
-      Boycott.find({followers: myId})
+  User.findById(myId).then((user) => {
+    if (user.boycotting.length == 0) {
+      const error = new Error("You don't follow any boycott...");
+      error.statusCode = 404;
+      throw error;
+    } else {
+      Boycott.find({ followers: myId})
       .then((boycott) => {
         res.status(200).json({
           boycotts: boycott,
-        });
+        })
       })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+    }
+  })
+  .catch((err) => {
+    if (!err.statusCode){
+      err.statusCode = 500;
+    }
+    next(err);
+  })
 };
 
 exports.getFollowing = (req, res, next) => {
@@ -152,21 +147,83 @@ exports.getFollowing = (req, res, next) => {
   
   User.findById(myId)
     .then((user) => {
-      if (user.following.length == 0) {
+      const follow = user.following.length;
+      if (follow == 0) {
         const error = new Error("You don't follow anyone...");
         error.statusCode = 404;
         throw error;
-      }
-      });
-      //Si le id du user1 et dans le tableau followers du user2,user3,user4 ect... on retourne l'identite de ces users. Ainsi user1 reçoit la liste de ceux qu'il follow. 
-        User.find({followers: myId}) 
-        .then ((follow) => {
-          console.log("FOLLOW:", follow) 
+      } else {
+        User.find({ followers: myId })
+        .then((follow) => {
           res.status(200).json({
-            myFollowed: follow,
-          });
+            myFollow: follow,
+          })
         })
-    // })
+      }
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.unfollowUser = (req, res, next) => {
+  const myId = req.user.userId;
+  const userId = req.params.userId;
+  User.findById(userId).then((user) => {
+    if (user.followers.indexOf(myId) > -1) {
+      const userIndex = user.followers.indexOf(myId);
+      user.followers.splice(userIndex, 1);
+      user.save();
+      res.status(200).json({
+        message: "User unfollowed",
+      });
+    } else {
+      const error = new Error("Error...");
+      error.statusCode = 404;
+      throw error;
+    }
+  });
+  User.findById(myId)
+    .then((user) => {
+      const userIndex = user.following.indexOf(userId);
+      user.following.splice(userIndex, 1);
+      user.save();
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.unfollowBoycott = (req, res, next) => {
+  const myId = req.user.userId;
+  const boycottId = req.params.boycottId;
+  Boycott.findById(boycottId)
+    .then((boycott) => {
+      if (boycott.followers.indexOf(myId) > -1) {
+        const userIndex = boycott.followers.indexOf(myId);
+        boycott.followers.splice(userIndex, 1);
+        boycott.save();
+        res.status(200).json({
+          message: "Boycott unfollowed",
+        });
+      } else {
+        const error = new Error("Error...");
+        error.statusCode = 404;
+        throw error;
+      }
+    });
+  User.findById(myId)
+    .then((user) => {
+      const userIndex = user.boycotting.indexOf(boycottId);
+      user.boycotting.splice(userIndex, 1);
+      user.save();
+    })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
