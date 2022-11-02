@@ -19,13 +19,17 @@ const boycottSchema = new Schema(
     },
     followers: {
       type: Array,
-      require: false
+      required: false
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: false
-    }
+    },
+    imageUrl: {
+      type: String,
+      required: true
+    },
   },
   { timestamps: true }
 );

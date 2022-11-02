@@ -2,6 +2,9 @@
 
 // const boycott = require("../models/boycott");
 const Boycott = require("../models/boycott");
+const nodeFetch = require("node-fetch");
+const FormData = require("form-data");
+const sharp = require("sharp");
 
 exports.getBoycotts = (req, res, next) => {
   Boycott.find()
@@ -48,30 +51,67 @@ exports.getBoycott = (req, res, next) => {
 };
 
 exports.createBoycott = (req, res, next) => {
-  const title = req.body.title;
-  const description = req.body.description;
-  const summary = req.body.summary;
-  const boycott = new Boycott({
-    title: title,
-    description: description,
-    summary: summary,
-    userId: req.user.userId
+  if (!req.file) {
+    const error = new Error("No image provided");
+    error.statusCode = 422;
+    throw error;
+  }
+  const image = req.file;
+  const resize = sharp(image.buffer).resize({width: 500}).jpeg({quality: 80});
+  const formdata = new FormData();
+  formdata.append("image", resize, {
+    contentType: image.mimetype,
+    filename: image.originalname,
   });
+  
 
-  boycott
-    .save()
-    .then((result) => {
-      res.status(201).json({
-        message: "Boycott créé avec succès !",
-        post: result,
+  nodeFetch("https://images.kalanso.top/image/?api=H29DISK", {
+      method: "POST",
+      body: formdata,
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      if (data.status === "success") {
+    const title = req.body.title;
+    const description = req.body.description;
+    const summary = req.body.summary;
+    const boycott = new Boycott({
+      title: title,
+      description: description,
+      summary: summary,
+      userId: req.user.userId,
+      imageUrl: data.filename
+    });
+
+    boycott
+      .save()
+      .then((result) => {
+        res.status(201).json({
+          message: "Boycott créé avec succès !",
+          post: result,
+        });
+      })
+      .catch((err) => {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
       });
+    } else {
+      const error = new Error("Image upload failed");
+      error.statusCode = 500;
+      throw error;
+    }
     })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
       next(err);
-    });
+    }
+    );
 };
 
 exports.modBoycott = (req, res, next) => {
