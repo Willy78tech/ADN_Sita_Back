@@ -21,6 +21,10 @@ const boycottSchema = new Schema(
       type: Array,
       required: false
     },
+    comments: {
+      type: Array,
+      required: false
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
