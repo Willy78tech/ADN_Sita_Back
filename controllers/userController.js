@@ -5,6 +5,7 @@ const User = require("../models/user");
 exports.getUser = (req, res, next) => {
   const userId = req.params.userId;
   User.findById(userId)
+    .select("pseudo")
     .then((user) => {
       if (!user) {
         const error = new Error("No user found");
@@ -25,6 +26,7 @@ exports.getUser = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
   User.find()
+    .select("pseudo")
     .then(users => {
       if (!users) {
         const error = new Error('Aucun utilisateur trouvé');
@@ -136,6 +138,31 @@ exports.deletePseudo = (req, res, next) => {
       next(err);
     });
 };
+
+exports.confirmation = (req, res, next) => {
+  const userId = req.params.userId;
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        const error = new Error("No user found");
+        error.statusCode = 404;
+        throw error;
+      }
+      user.confirmed = true;
+      return user.save();
+    })
+    .then((user) => {
+      res.status(200).json({ message: "User confirmed", user: user });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+
 
 exports.logout = (req, res) => {
   res.app.locals.decodedToken = null;

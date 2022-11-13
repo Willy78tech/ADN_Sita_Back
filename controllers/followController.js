@@ -21,6 +21,8 @@ exports.followUser = (req, res, next) => {
   });
 
   User.findById(myId)
+    .populate("following")
+    .populate("followers")
     .then((user) => {
       const myFollow = user.following;
       //Vérifie si l'utilisateur est dans le tableau.
@@ -68,6 +70,8 @@ exports.followBoycott = (req, res, next) => {
   });
 
   User.findById(myId)
+    .populate("following")
+    .populate("followers")
     .then((user) => {
       const myFollow = user.boycotting;
       if (myFollow.indexOf(boycottId) > -1) {

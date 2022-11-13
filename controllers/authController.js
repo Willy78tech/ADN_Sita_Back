@@ -3,6 +3,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const nodemailer = require("../config/nodemailer");
 dotenv.config();
 
 const User = require("../models/user");
@@ -35,9 +36,11 @@ exports.signup = (req, res, next) => {
                   }
                 })
                 .then((result) => {
+                  nodemailer.sendEmail(pseudo, email, "http://localhost:3000/confirmation/" + result._id);
                   res.status(201).json({
                     message: "User have been created !",
                     userId: result._id,
+                    user: result,
                   });
                 })
                 .catch((err) => {

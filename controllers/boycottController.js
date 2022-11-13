@@ -8,6 +8,8 @@ const sharp = require("sharp");
 
 exports.getBoycotts = (req, res, next) => {
   Boycott.find()
+    .populate("userId")
+    .populate("followers")  
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("No boycott found...");
@@ -31,6 +33,8 @@ exports.getBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
 
   Boycott.findById(boycottId)
+    .populate("userId")
+    .populate("followers")
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("No boycott found...");
@@ -155,8 +159,8 @@ exports.deleteBoycott = (req,res,next) => {
     }
     return boycott.deleteOne();
   })
-  .then((boycott) => {
-    res.status(200).json({ message: "Boycott deleted", boycott: boycott });
+  .then(() => {
+    res.status(204).json();
   })
   .catch((err) => {
     if (!err.statusCode) {

@@ -13,6 +13,9 @@ router.put("/mod-user/:userId", userController.modUser);
 router.delete("/delete-pseudo/:pseudo", isAuth, userController.deletePseudo);
 router.delete("/delete-user/:userId", isAuth, userController.deleteUser);
 
+
+router.get("/confirmation/:userId", userController.confirmation);
+
 router.get('/logout', isAuth, userController.logout);
 
 module.exports = router;
