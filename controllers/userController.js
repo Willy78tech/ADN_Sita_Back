@@ -5,7 +5,7 @@ const User = require("../models/user");
 exports.getUser = (req, res, next) => {
   const userId = req.params.userId;
   User.findById(userId)
-    .select("pseudo")
+    .select("pseudo city country quote")
     .then((user) => {
       if (!user) {
         const error = new Error("No user found");
@@ -26,16 +26,16 @@ exports.getUser = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
   User.find()
-    .select("pseudo")
-    .then(users => {
+    .select("pseudo city country quote")
+    .then((users) => {
       if (!users) {
-        const error = new Error('Aucun utilisateur trouvé');
+        const error = new Error("Aucun utilisateur trouvé");
         error.statusCode = 404;
         throw error;
       }
       res.status(200).json({ users: users });
     })
-    .catch(err => {
+    .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
@@ -45,10 +45,12 @@ exports.getUsers = (req, res, next) => {
 
 exports.modUser = (req, res, next) => {
   const userId = req.params.userId;
-  const pseudo = req.body.pseudo;
-  const email = req.body.email;
-  const quote = req.body.quote;
-  const password = req.body.password;
+  let pseudo = req.body.pseudo;
+  let email = req.body.email;
+  let city = req.body.city;
+  let country = req.body.country;
+  let quote = req.body.quote;
+  let password = req.body.password;
 
   User.findById(userId)
     .then((user) => {
@@ -57,10 +59,36 @@ exports.modUser = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      user.pseudo = pseudo;
-      user.email = email;
-      user.quote = quote;
-      user.password = password;
+      if (pseudo == "") {
+        pseudo = user.pseudo;
+      } else {
+        user.pseudo = pseudo;
+      }
+      if (email == "") {
+        email = user.email;
+      } else {
+        user.email = email;
+      }
+      if (city == "") {
+        city = user.city;
+      } else {
+        user.city = city;
+      }
+      if (country == "") {
+        country = user.country;
+      } else {
+        user.country = country;
+      }
+      if (quote == "") {
+        quote = user.quote;
+      } else {
+        user.quote = quote;
+      }
+      if (password == "") {
+        password = user.password;
+      } else {
+        user.password = password;
+      }
       return user.save();
     })
     .then((user) => {
@@ -84,10 +112,8 @@ exports.deleteUser = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      return user.deleteOne();
-    })
-    .then((user) => {
-      res.status(200).json({ message: "User deleted", user: user });
+      user.deleteOne();
+      res.status(200).send();
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -100,6 +126,7 @@ exports.deleteUser = (req, res, next) => {
 exports.getPseudo = (req, res, next) => {
   const pseudo = req.params.pseudo;
   User.find({ pseudo: pseudo })
+    .select("pseudo city country quote")
     .then((user) => {
       if (user.length == 0) {
         const error = new Error("There is no " + pseudo);
@@ -126,10 +153,8 @@ exports.deletePseudo = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      return user.deleteOne();
-    })
-    .then((user) => {
-      res.status(200).json({ message: "User deleted", user: user });
+      user.deleteOne();
+      res.status(200).send();
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -139,7 +164,7 @@ exports.deletePseudo = (req, res, next) => {
     });
 };
 
-exports.confirmation = (req, res, next) => {
+exports.activateAccount = (req, res, next) => {
   const userId = req.params.userId;
   User.findById(userId)
     .then((user) => {
@@ -148,7 +173,7 @@ exports.confirmation = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-      user.confirmed = true;
+      user.isActive = true;
       return user.save();
     })
     .then((user) => {
@@ -162,10 +187,8 @@ exports.confirmation = (req, res, next) => {
     });
 };
 
-
-
 exports.logout = (req, res) => {
   res.app.locals.decodedToken = null;
-  res.status(200).json({ message: 'Déconnexion réussie' });
+  res.status(200).json({ message: "Déconnexion réussie" });
   res.redirect("/");
 };

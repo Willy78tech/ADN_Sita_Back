@@ -1,45 +1,61 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+require("mongoose-type-email");
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
   {
     pseudo: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
+      type: mongoose.SchemaTypes.Email,
+      required: true,
+    },
+    city: {
       type: String,
-      required: true
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
     },
     quote: {
       type: String,
-      required: true,
-      maxlength: 255 
+      required: false,
+      maxlength: 255,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     following: {
       type: Array,
-      required: false
+      required: false,
     },
     followers: {
       type: Array,
-      required: false
+      required: false,
     },
     boycotting: {
       type: Array,
-      required: false
+      required: false,
+    },
+    reporting: {
+      type: Array,
+      required: false,
     },
     isAdmin: {
       type: Boolean,
-      required: true
-    }
+      required: false,
+    },
+    isActive: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('User', userSchema);
-
-
+module.exports = mongoose.model("User", userSchema);

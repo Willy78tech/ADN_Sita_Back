@@ -21,6 +21,10 @@ const boycottSchema = new Schema(
       type: Array,
       required: false
     },
+    reports: {
+      type: Array,
+      required: false
+    },
     comments: {
       type: Array,
       required: false
