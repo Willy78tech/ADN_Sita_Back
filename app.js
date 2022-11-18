@@ -7,7 +7,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // parse application/json
-app.use(express.json());  
+app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));  
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,7 +29,10 @@ const userRoutes = require("./routes/user");
 app.use(userRoutes);
 const followerRoutes = require("./routes/follower");
 app.use(followerRoutes);
-
+const commentRoutes = require("./routes/comment");
+app.use(commentRoutes);
+const reportRoutes = require("./routes/report");
+app.use(reportRoutes);
 
 const errorController = require("./controllers/errorController");
 app.use(errorController.get404);
@@ -41,10 +45,6 @@ app.use(function (err, req, res, next) {
   res.status(err.statusCode).json({ message: err.message, statusCode: err.statusCode });
 });
 
-
-
-
-
 const PORT = process.env.PORT || 3000;
 mongoose
   .connect(process.env.MONGODB)
@@ -54,4 +54,3 @@ mongoose
     });
   })
   .catch(err => console.log(err));
-

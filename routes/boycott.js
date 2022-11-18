@@ -2,18 +2,18 @@
 const express = require("express");
 const router = express.Router();
 const boycottController = require("../controllers/boycottController");
+const isActive = require("../middleware/is-active");
 const isAuth = require("../middleware/is-auth");
 const upload = require("../middleware/upload-multer");
 
 router.get("/get-boycotts", boycottController.getBoycotts);
-router.get("/get-boycott/:boycottId", boycottController.getBoycott);
-router.get("/get-boycott-title/:title",isAuth, boycottController.getBoycottTitle);
+router.get("/get-boycott/:boycottId", isAuth, isActive, boycottController.getBoycott);
+router.get("/get-boycott-title/:title", isAuth, isActive, boycottController.getBoycottTitle);
+router.get("/get-boycott-created/:userId", isAuth, isActive, boycottController.getMyBoycottsCreated);
 
-router.post("/add-boycott", isAuth, upload.single("image"), boycottController.createBoycott);
-router.put("/mod-boycott/:boycottId", isAuth, boycottController.modBoycott);
+router.post("/add-boycott", isAuth, isActive, upload.single("image"), boycottController.createBoycott);
+router.put("/mod-boycott/:boycottId", isAuth, isActive, boycottController.modBoycott);
 
-router.delete("/delete-boycott/:boycottId", isAuth, boycottController.deleteBoycott);
-
-router.get("/get-boycott-created/:userId", isAuth, boycottController.getMyBoycottsCreated);
+router.delete("/delete-boycott/:boycottId", isAuth, isActive, boycottController.deleteBoycott);
 
 module.exports = router;

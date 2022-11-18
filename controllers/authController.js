@@ -11,6 +11,8 @@ const User = require("../models/user");
 exports.signup = (req, res, next) => {
   const pseudo = req.body.pseudo;
   const email = req.body.email;
+  const city = req.body.city;
+  const country = req.body.country;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
   const quote = req.body.quote;
@@ -24,19 +26,25 @@ exports.signup = (req, res, next) => {
             if (userNameFound == null) {
               bcrypt.hash(password, 12)
                 .then((hashedPw) => {
-                  if (password == confirmPassword) {
+                  if (password != confirmPassword || password.length < 1) {
+                    const error = new Error("Password validation incorrect...");
+                    error.statusCode = 401;
+                    throw error
+                  }else {
                     const user = new User({
                       pseudo: pseudo,
                       email: email,
+                      city: city,
+                      country: country,
                       password: hashedPw,
                       quote: quote,
                       isAdmin: isAdmin,
                     });
-                    return user.save();
+                    return user.save();                
                   }
                 })
                 .then((result) => {
-                  nodemailer.sendEmail(pseudo, email, "http://localhost:3000/confirmation/" + result._id);
+                  nodemailer.sendEmail(pseudo, email, "http://localhost:3000/activate-account/" + result._id);
                   res.status(201).json({
                     message: "User have been created !",
                     userId: result._id,
