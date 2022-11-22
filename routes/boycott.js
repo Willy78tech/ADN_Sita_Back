@@ -5,6 +5,7 @@ const boycottController = require("../controllers/boycottController");
 const isActive = require("../middleware/is-active");
 const isAuth = require("../middleware/is-auth");
 const upload = require("../middleware/upload-multer");
+const isAdminOrLogin = require("../middleware/is-admin-or-login");
 
 router.get("/get-boycotts", boycottController.getBoycotts);
 router.get("/get-boycott/:boycottId", isAuth, isActive, boycottController.getBoycott);
@@ -14,6 +15,6 @@ router.get("/get-boycott-created/:userId", isAuth, isActive, boycottController.g
 router.post("/add-boycott", isAuth, isActive, upload.single("image"), boycottController.createBoycott);
 router.put("/mod-boycott/:boycottId", isAuth, isActive, boycottController.modBoycott);
 
-router.delete("/delete-boycott/:boycottId", isAuth, isActive, boycottController.deleteBoycott);
+router.delete("/delete-boycott/:boycottId", isAuth, isActive, isAdminOrLogin, boycottController.deleteBoycott);
 
 module.exports = router;

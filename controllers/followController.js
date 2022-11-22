@@ -39,15 +39,15 @@ exports.followBoycott = (req, res, next) => {
 };
 
 exports.getBoycotting = (req, res, next) => {
-  const myId = req.user.userId;
-  User.findById(myId)
+  const userId = req.user.userId;
+  User.findById(userId)
     .then((user) => {
       if (user.boycotting.length == 0) {
         const error = new Error("You don't follow any boycott...");
         error.statusCode = 404;
         throw error;
       } else {
-        Boycott.find({ followers: myId }).then((boycott) => {
+        Boycott.find({ followers: userId }).then((boycott) => {
           res.status(200).json({
             boycotts: boycott,
           });
