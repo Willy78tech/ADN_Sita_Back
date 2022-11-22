@@ -4,10 +4,11 @@ const User = require("../models/user");
 
 module.exports = (req, res, next) => {
   const myId = req.user.userId;
+  const userId = req.params.userId;
   user
     .findById(myId)
     .then((user) => {
-      if (!user.isAdmin) {
+      if (user.isAdmin == false && myId != userId) {
         const error = new Error("Not authorized...");
         error.statusCode = 401;
         throw error;

@@ -15,6 +15,7 @@ exports.reportBoycott = (req, res, next) => {
         throw error;
       } else if (boycott.reports.indexOf(myId) == -1) {
         boycott.reports.push(myId);
+        boycott.isReport = true;
         boycott.save();
         User.findById(myId).then((user) => {
           user.reporting.push(boycottId);
@@ -42,7 +43,7 @@ exports.clearReports = (req, res, next) => {
   Boycott.findById(boycottId)
     .then((boycott) => {
       let array = boycott.reports;
-      if (array == 0) {
+      if (array.length == 0) {
         const error = new Error("No reports for this boycott...");
         error.statusCode = 404;
         throw error;
@@ -50,13 +51,53 @@ exports.clearReports = (req, res, next) => {
         while (array.length > 0) {
           array.pop();
         }
+        User.find()
+          .then((users) => {
+            users.forEach((user) => {
+              let index = user.reporting.indexOf(boycottId);
+              if (index != -1) {
+                user.reporting.splice(index, 1);
+              }
+              return user.save();
+            });
+          })
+          .then(() => {
+            res.status(200).json({
+              message: "Reports removed.",
+            });
+          });
+        boycott.isReport = false;
         return boycott.save();
       }
     })
-    .then(() => {
-      res.status(200).json({
-        message: "Reports removed.",
-      });
+
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.getReportedBoycotts = (req, res, next) => {
+  boycott
+    .find()
+    .then((boycott) => {
+      if (!boycott) {
+        const error = new Error("No boycott found...");
+        error.statusCode = 404;
+        throw error;
+      } else {
+        let array = [];
+        boycott.forEach((boycott) => {
+          if (boycott.isReport == true) {
+            array.push(boycott);
+          }
+        });
+        res.status(200).json({
+          reports: array,
+        });
+      }
     })
     .catch((err) => {
       if (!err.statusCode) {

@@ -25,10 +25,11 @@ const boycottSchema = new Schema(
       type: Array,
       required: false
     },
-    comments: {
-      type: Array,
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
       required: false
-    },
+    }],
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -37,6 +38,11 @@ const boycottSchema = new Schema(
     imageUrl: {
       type: String,
       required: true
+    },
+    isReport: {
+      type: Boolean,
+      required: false,
+      default: false
     },
   },
   { timestamps: true }

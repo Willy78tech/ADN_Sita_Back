@@ -8,8 +8,8 @@ const sharp = require("sharp");
 
 exports.getBoycotts = (req, res, next) => {
   Boycott.find()
-    .populate("userId")
-    .populate("followers")
+    .sort([["createdAt", -1]])
+    .populate({ path: "userId", select: "pseudo city country quote" })
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("No boycott found...");
@@ -33,8 +33,12 @@ exports.getBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
 
   Boycott.findById(boycottId)
-    .populate("userId")
-    .populate("followers")
+    .populate({ path: "userId", select: "pseudo city country quote" })
+    .populate({
+      path: "comments",
+      select: "comment userId",
+      populate: { path: "userId", select: "pseudo" },
+    })
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("No boycott found...");
@@ -120,35 +124,50 @@ exports.createBoycott = (req, res, next) => {
 
 exports.modBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
+  const myId = req.user.userId;
   let title = req.body.title;
   let description = req.body.description;
   let summary = req.body.summary;
   Boycott.findById(boycottId)
     .then((boycott) => {
       if (!boycott) {
-        const error = new Error("No boycott found");
+        const error = new Error("No boycott found...");
         error.statusCode = 404;
         throw error;
+      } else if (boycott) {
+        User.findById(myId)
+          .then((user) => {
+            if (user.isAdmin == false && boycott.userId != myId) {
+              const error = new Error("Not authorized...");
+              error.statusCode = 401;
+              throw error;
+            } else if (title == "") {
+              title = boycott.title;
+            } else {
+              boycott.title = title;
+            }
+            if (description == "") {
+              description = boycott.description;
+            } else {
+              boycott.description = description;
+            }
+            if (summary == "") {
+              summary = boycott.summary;
+            } else {
+              boycott.summary = summary;
+            }
+            return boycott.save();
+          })
+          .then((boycott) => {
+            res.status(200).json({ message: "Boycott updated", boycott: boycott });
+          })
+          .catch((err) => {
+            if (!err.statusCode) {
+              err.statusCode = 500;
+            }
+            next(err);
+          });
       }
-      if (title == "") {
-        title = boycott.title;
-      } else {
-        boycott.title = title;
-      }
-      if (description == "") {
-        description = boycott.description;
-      } else {
-        boycott.description = description;
-      }
-      if (summary == "") {
-        summary = boycott.summary;
-      } else {
-        boycott.summary = summary;
-      }
-      return boycott.save();
-    })
-    .then((boycott) => {
-      res.status(200).json({ message: "Boycott updated", boycott: boycott });
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -156,8 +175,7 @@ exports.modBoycott = (req, res, next) => {
       }
       next(err);
     });
-};
-
+  }
 exports.deleteBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
   const myId = req.user.userId;
@@ -200,6 +218,7 @@ exports.getBoycottTitle = (req, res, next) => {
   const title = req.params.title;
 
   Boycott.findOne({ title: title })
+    .populate({ path: "userId", select: "pseudo city country quote" })
     .then((boycott) => {
       if (!boycott) {
         const error = new Error("There is no " + title + " boycott");
@@ -218,9 +237,8 @@ exports.getBoycottTitle = (req, res, next) => {
 
 exports.getMyBoycottsCreated = (req, res, next) => {
   const userId = req.params.userId;
-  Boycott.find({
-    userId: userId,
-  })
+  Boycott.find({ userId: userId })
+    .populate({ path: "userId", select: "pseudo city country quote" })
     .then((boycotts) => {
       if (boycotts.length == 0) {
         const error = new Error("Aucun boycott trouvé");

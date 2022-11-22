@@ -4,12 +4,16 @@ const router = express.Router();
 const commentController = require("../controllers/commentController");
 const isAuth = require("../middleware/is-auth");
 const isActive = require("../middleware/is-active");
+const isAdmin = require("../middleware/is-admin");
+const isAdminOrLogin = require("../middleware/is-admin-or-login");
 
-// route pour ajouter un commentaire à un boycott
+router.get("/get-comments", isAuth, isActive, isAdmin, commentController.getComments);
+router.get("/get-comment/:commentId", isAuth, isActive, commentController.getCommentById);
+
 router.post("/add-comment/:boycottId", isAuth, isActive, commentController.addComment);
-// route pour supprimer un commentaire à un boycott
-router.delete("/delete-comment/:boycottId", isAuth, isActive, commentController.deleteComment);
-// route pour modifier un commentaire à un boycott
-router.put("/mod-comment/:boycottId", isAuth, isActive, commentController.modComment);
+
+router.delete("/delete-comment/:commentId", isAuth, isActive,isAdminOrLogin, commentController.deleteComment);
+
+router.put("/mod-comment/:commentId", isAuth, isActive, isAdminOrLogin, commentController.modComment);
 
 module.exports = router;
