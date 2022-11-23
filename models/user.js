@@ -47,7 +47,8 @@ const userSchema = new Schema(
     },
     isAdmin: {
       type: Boolean,
-      required: false,
+      required: true,
+      default: false
     },
     isActive: {
       type: Boolean,
@@ -58,5 +59,6 @@ const userSchema = new Schema(
   },
   { timestamps: true }
 );
+
 
 module.exports = mongoose.model("User", userSchema);
