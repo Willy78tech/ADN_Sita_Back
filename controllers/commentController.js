@@ -3,7 +3,7 @@
 const boycott = require("../models/boycott");
 const Boycott = require("../models/boycott");
 const Comment = require("../models/comment");
-const user = require("../models/user");
+const User = require("../models/user");
 
 exports.addComment = (req, res, next) => {
   const boycottId = req.params.boycottId;
@@ -14,10 +14,9 @@ exports.addComment = (req, res, next) => {
       const opinion = new Comment({
         comment: comment,
         userId: userId,
-        boycottId: boycottId
+        boycottId: boycottId,
       });
-      boycott.comments.push(opinion._id),
-      opinion.save();
+      boycott.comments.push(opinion._id), opinion.save();
       boycott.save().then((result) => {
         res.status(201).json({
           message: "Comment added",
@@ -35,100 +34,112 @@ exports.addComment = (req, res, next) => {
 
 exports.deleteComment = (req, res, next) => {
   const commentId = req.params.commentId;
-  Comment.findById(commentId).then((comment) => {
-    if (!comment) {
-      const error = new Error("Comment not found...");
-      error.statusCode = 404;
-      throw error;
-    } else {
-        const boycottId = comment.boycottId
-        boycott.findById(boycottId)
-        .then((boycott) => {
-          console.log("BOYCOTT", boycott)
-            let index = boycott.comments.indexOf(commentId)
-            console.log("COMMENTID",commentId)
-            console.log("Index", index)
-            if (index != -1){
-                boycott.comments.splice(index,1)
-            }      
-            boycott.save();
+  const userId = req.user.userId;
+  Comment.findById(commentId)
+    .then((comment) => {
+      if (!comment) {
+        const error = new Error("Comment not found...");
+        error.statusCode = 404;
+        throw error;
+      } else if (boycott) {
+        User.findById(userId)
+          .then((user) => {
+            if (user.isAdmin == false && comment.userId != userId) {
+              const error = new Error("Not authorized...");
+              error.statusCode = 401;
+              throw error;
+            } else {
+              const boycottId = comment.boycottId;
+              boycott.findById(boycottId).then((boycott) => {
+                console.log("BOYCOTT", boycott);
+                let index = boycott.comments.indexOf(commentId);
+                console.log("COMMENTID", commentId);
+                console.log("Index", index);
+                if (index != -1) {
+                  boycott.comments.splice(index, 1);
+                }
+                boycott.save();
+                res.status(200).send();
+                comment.deleteOne();
+              });
+            }
           })
-          comment.deleteOne();
-      res.status(200).send();
-      
-    }
-  })
-  .catch((err)=> {
-    if(!err.statusCode){
+          .catch((err) => {
+            if (!err.statusCode) {
+              err.statusCode = 500;
+            }
+            next(err);
+          });
+      }
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
         err.statusCode = 500;
-    }
-    next(err);
-  })
+      }
+      next(err);
+    });
 };
 
 exports.modComment = (req, res, next) => {
-    const commentId = req.params.commentId;
-    let comment = req.body.comment;
-    Comment.findById(commentId)
-    .then((result) =>  {
-        if (!result) {
-          const error = new Error("No comment found");
-          error.statusCode = 404;
-          throw error;
-        }
-        if (comment == "") {
-          comment = result.comment;
-        } else {
-          result.comment = comment;
-        }
-        return result.save();
+  const commentId = req.params.commentId;
+  let comment = req.body.comment;
+  Comment.findById(commentId)
+    .then((result) => {
+      if (!result) {
+        const error = new Error("No comment found");
+        error.statusCode = 404;
+        throw error;
+      }
+      if (comment == "") {
+        comment = result.comment;
+      } else {
+        result.comment = comment;
+      }
+      return result.save();
     })
     .then((result) => {
-        res.status(200).json({ message: "Comment updated", post: result})
+      res.status(200).json({ message: "Comment updated", post: result });
     })
     .catch((err) => {
-        if (!err.statusCode){
-            err.statusCode = 500;
-        }
-        next(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
 exports.getComments = (req, res, next) => {
-    Comment.find()
+  Comment.find()
     .populate({ path: "userId", select: "pseudo" })
-    .then ((comments) => {
-        if (!comments) {
-            const error = new Error ("No comments...");
-            error.statusCode = 404;
-            throw error;
-        } else {
-            res.status(200).json({comments:comments})
-        }
+    .then((comments) => {
+      if (!comments) {
+        const error = new Error("No comments...");
+        error.statusCode = 404;
+        throw error;
+      } else {
+        res.status(200).json({ comments: comments });
+      }
     })
     .catch((err) => {
-        if (!err) {
-            err.statusCode = 500;
-        }
-        next(err)
-    })
-}
+      if (!err) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
 
 exports.getCommentById = (req, res, next) => {
   const commentId = req.params.commentId;
-  Comment.findById(commentId)
-  .then ((comments) => {
+  Comment.findById(commentId).then((comments) => {
     if (!comments) {
-      const error = new Error ("No comments...");
+      const error = new Error("No comments...");
       error.statusCode = 404;
       throw error;
+    } else {
+      res.status(200).json({ comment: comments });
     }
-    else {
-      res.status(200).json({comment:comments})
-    }
-  })
-
-}
+  });
+};
 
 // fonction qui permet d'ajouter un commentaire sur un boycott
 // exports.addComment = (req, res, next) => {

@@ -178,7 +178,7 @@ exports.modBoycott = (req, res, next) => {
   }
 exports.deleteBoycott = (req, res, next) => {
   const boycottId = req.params.boycottId;
-  const myId = req.user.userId;
+  const userId = req.user.userId;
 
   Boycott.findById(boycottId)
     .then((boycott) => {
@@ -187,9 +187,9 @@ exports.deleteBoycott = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       } else if (boycott) {
-        User.findById(myId)
+        User.findById(userId)
           .then((user) => {
-            if (user.isAdmin == false && boycott.userId != myId) {
+            if (user.isAdmin == false && boycott.userId != userId) {
               const error = new Error("Not authorized...");
               error.statusCode = 401;
               throw error;

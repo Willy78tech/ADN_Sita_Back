@@ -11,13 +11,15 @@ router.get("/get-user/:userId", isAuth, isActive, userController.getUser);
 router.get("/get-users", isAuth, isActive, userController.getUsers);
 router.get("/get-pseudo/:pseudo", isAuth, isActive, userController.getPseudo);
 
-router.put("/mod-user/:userId",isAuth, isActive, isAdminOrLogin, userController.modUser);
+router.put("/mod-user/:userId",isAuth, isActive, userController.modUser);
 
-router.delete("/delete-pseudo/:pseudo", isAuth, isActive, isAdminOrLogin, userController.deletePseudo);
+router.delete("/delete-pseudo/:pseudo", isAuth, isActive, userController.deletePseudo);
 router.delete("/delete-user/:userId", isAuth, isActive, isAdminOrLogin, userController.deleteUser);
 
 router.get("/activate-account/:userId", userController.activateAccount);
 
 router.get('/logout', isAuth, isActive, userController.logout);
+
+router.get("/search-user", isAuth, isActive, userController.searchUser);
 
 module.exports = router;

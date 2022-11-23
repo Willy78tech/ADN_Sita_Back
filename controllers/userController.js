@@ -5,7 +5,7 @@ const User = require("../models/user");
 exports.getUser = (req, res, next) => {
   const userId = req.params.userId;
   User.findById(userId)
-    .select("pseudo city country quote")
+    .select("pseudo city country quote isAdmin")
     .then((user) => {
       if (!user) {
         const error = new Error("No user found");
@@ -191,4 +191,29 @@ exports.logout = (req, res) => {
   res.app.locals.decodedToken = null;
   res.status(200).json({ message: "Déconnexion réussie" });
   res.redirect("/");
+};
+
+exports.searchUser = (req, res, next) => {
+  const input = req.body.input;
+
+  User.find({$or: [ {pseudo:input}, {city:input}, {country:input} ]})
+    .select("pseudo city country quote")
+    .then((user) => {
+      console.log("User", user)
+      if (user.length == 0) {
+        const error = new Error("There is no " + input);
+        error.statusCode = 404;
+        throw error;
+      } else {
+        res.status(200).json({ user: user });
+      }
+    }
+    )
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+    );
 };
