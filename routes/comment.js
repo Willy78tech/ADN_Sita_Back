@@ -10,6 +10,7 @@ const isAdminOrLogin = require("../middleware/is-admin-or-login");
 router.get("/get-comments", isAuth, isActive, commentController.getComments);
 router.get("/get-comment/:commentId", isAuth, isActive, commentController.getCommentById);
 
+
 router.post("/add-comment/:boycottId", isAuth, isActive, commentController.addComment);
 
 router.delete("/delete-comment/:commentId", isAuth, isActive, commentController.deleteComment);

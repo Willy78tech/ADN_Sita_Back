@@ -138,6 +138,12 @@ exports.getCommentById = (req, res, next) => {
     } else {
       res.status(200).json({ comment: comments });
     }
+  })
+  .catch((err) => {
+    if (!err) {
+      err.statusCode = 500;
+    }
+    next(err);
   });
 };
 
