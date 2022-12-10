@@ -37,7 +37,7 @@ const boycottSchema = new Schema(
     },
     imageUrl: {
       type: String,
-      required: true
+      required: false
     },
     isReport: {
       type: Boolean,

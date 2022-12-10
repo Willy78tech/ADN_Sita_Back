@@ -130,7 +130,8 @@ exports.getComments = (req, res, next) => {
 
 exports.getCommentById = (req, res, next) => {
   const commentId = req.params.commentId;
-  Comment.findById(commentId).then((comments) => {
+  Comment.findById(commentId)
+  .then((comments) => {
     if (!comments) {
       const error = new Error("No comments...");
       error.statusCode = 404;
