@@ -1,6 +1,8 @@
 "use strict";
 // const user = require("../models/user");
 const User = require("../models/user");
+const Boycott = require("../models/boycott");
+const Comment = require("../models/comment");
 
 exports.getUser = (req, res, next) => {
   const userId = req.params.userId;
@@ -111,9 +113,38 @@ exports.deleteUser = (req, res, next) => {
         const error = new Error("No user found");
         error.statusCode = 404;
         throw error;
+      } else {
+        Boycott.find({ userId: userId })
+          .then((boycotts) => {
+            if (boycotts.length != 0) {
+              boycotts.forEach((boycott) => {
+                return boycott.deleteOne();
+              });
+            }
+          })
+          .catch((err) => {
+            if (!err.statusCode) {
+              err.statusCode = 500;
+            }
+            next(err);
+          });
+        Comment.find({ userdId: userId })
+        .then((comments) => {
+          if (comments.length != 0) {
+            comments.forEach((comment) => {
+                return comment.deleteOne();
+              });
+            }
+          })
+          .catch((err) => {
+            if (!err.statusCode) {
+              err.statusCode = 500;
+            }
+            next(err);
+          });
+        user.deleteOne();
+        res.status(200).send("User deleted");
       }
-      user.deleteOne();
-      res.status(200).send();
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -196,10 +227,10 @@ exports.logout = (req, res) => {
 exports.searchUser = (req, res, next) => {
   const input = req.body.input;
 
-  User.find({$or: [ {pseudo:input}, {city:input}, {country:input} ]})
+  User.find({ $or: [{ pseudo: input }, { city: input }, { country: input }] })
     .select("pseudo city country quote")
     .then((user) => {
-      console.log("User", user)
+      console.log("User", user);
       if (user.length == 0) {
         const error = new Error("There is no " + input);
         error.statusCode = 404;
@@ -207,13 +238,11 @@ exports.searchUser = (req, res, next) => {
       } else {
         res.status(200).json({ user: user });
       }
-    }
-    )
+    })
     .catch((err) => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
       next(err);
-    }
-    );
+    });
 };
