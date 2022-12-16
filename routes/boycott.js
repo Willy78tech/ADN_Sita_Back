@@ -13,7 +13,7 @@ router.get("/get-boycott/:boycottId", isAuth, isActive, boycottController.getBoy
 router.get("/get-boycott-title/:title", isAuth, isActive, boycottController.getBoycottTitle);
 router.get("/get-boycott-created/:userId", isAuth, isActive, boycottController.getMyBoycottsCreated);
 
-router.post("/add-boycott", isAuth, isActive, upload.single("image"), boycottController.createBoycott);
+router.post("/add-boycott", isAuth, isActive, upload.single("file"), boycottController.createBoycott);
 router.put("/mod-boycott/:boycottId", isAuth, isActive, boycottController.modBoycott);
 
 router.delete("/delete-boycott/:boycottId", isAuth, boycottController.deleteBoycott);
