@@ -93,9 +93,7 @@ exports.createBoycott = (req, res, next) => {
           userId: req.user.userId,
           imageUrl: data.filename,
         });
-
-        boycott
-          .save()
+        return boycott.save()
           .then((result) => {
             res.status(201).json({
               message: "Boycott créé avec succès !",
@@ -107,7 +105,7 @@ exports.createBoycott = (req, res, next) => {
               err.statusCode = 500;
             }
             next(err);
-          });
+          })
       } else {
         const error = new Error("Image upload failed");
         error.statusCode = 500;
