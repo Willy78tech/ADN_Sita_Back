@@ -26,6 +26,6 @@ module.exports.sendEmail = (pseudo, email, confirmationUrl) => {
         subject: 'Confirmation de votre compte',
         html: `<h1>Bonjour ${pseudo}</h1>
         <p>Merci de confirmer votre compte en cliquant sur le lien ci-dessous</p>
-        <a href="https://adnsita.onrender.com/login">Confirmer mon compte</a>`
+        <a href="http://localhost:3001/login">Confirmer mon compte</a>`
     }).catch(err => console.log(err));   
 };
