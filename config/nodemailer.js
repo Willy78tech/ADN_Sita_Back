@@ -19,13 +19,13 @@ var transport = nodemailer.createTransport({
     }
 });
  
-module.exports.sendEmail = (pseudo, email, confirmationUrl) => {
+module.exports.sendEmail = (pseudo, email, confirmationUrl, id) => {
     transport.sendMail ({
         from: mail_sender,
         to: email,
         subject: 'Confirmation de votre compte',
         html: `<h1>Bonjour ${pseudo}</h1>
         <p>Merci de confirmer votre compte en cliquant sur le lien ci-dessous</p>
-        <a href="http://localhost:3000/confirmed">Confirmer mon compte</a>`
+        <a href="http://localhost:3000/id=${id}">Confirmer mon compte</a>`
     }).catch(err => console.log(err));   
 };
